@@ -1,12 +1,11 @@
 import pygame
-#Logan Reneau, initial gameloop and display
 
+#Logan Reneau, initial gameloop and display
 fps = 10
 pygame.init()
 tile = 30
-width = 720
-height = 480
-display = pygame.display.set_mode(width, height)
+size = width, height = 720, 480
+display = pygame.display.set_mode(size)
 clock = pygame.time.Clock()
 
 while True:

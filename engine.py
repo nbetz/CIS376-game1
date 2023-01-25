@@ -4,6 +4,13 @@ import pygame
 # Logan Reneau, initial gameloop and display
 # Noah converted Engine to a class
 class Engine:
+    _running: bool
+    _fps: int
+    _tile_size: int
+    _screen_width: int
+    _screen_height: int
+    _screen: pygame.Surface
+
     def __init__(self, game_fps, tile_size, screen_width, screen_height):
         pygame.init()
         self._running = False
@@ -31,4 +38,3 @@ class Engine:
 
             pygame.display.flip()
             clock.tick(self._fps)
-

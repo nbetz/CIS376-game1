@@ -7,6 +7,7 @@ class GameObject:
     x: int
     y: int
     tags: list
+    tag_information: dict
 
     # TODO
     def __init__(self):

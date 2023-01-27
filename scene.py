@@ -3,6 +3,7 @@ import game_object
 
 class Scene:
     game_objects: list
+    identifier: str
 
     def __init__(self):
         pass

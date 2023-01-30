@@ -17,6 +17,7 @@ class Engine:
     clock: pygame.time.Clock
     delta_time: int
     event_queue: list
+    rectList: list
 
     def __init__(self, game_fps, tile_size, screen_width, screen_height):
         pygame.init()
@@ -31,25 +32,42 @@ class Engine:
         self.event_queue = pygame.event.get()
         self._scene_list = []
 
+        #self.rectList = []  #this will eventually be moved to scene as the game object list
+    #Noah created game loop
     def loop(self):
         self._running = True
-
+        init_scene = scene.Scene(self)
+        init_scene.initial_grid()
+        self._scene_list.append(init_scene)
         while self._running:
-            self._screen.fill(pygame.Color('black'))
-
             # TODO move event actions to dictionary & probably move to either custom scene or gameobjects
+            #INPUT
+
+            #UPDATE
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     exit()
+                #Logan Reneau click recognition
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    for currentRect in init_scene.game_objects:
+                            rect = pygame.Rect(currentRect.x, currentRect.y, self._tile_size-1, self._tile_size-1)
+                            if rect.collidepoint(event.pos):
+                                if currentRect.isAlive:
+                                    currentRect.color = (0, 0, 0)
+                                    currentRect.isAlive = False
+                                else:
+                                    currentRect.color = (255, 0, 0)
+                                    currentRect.isAlive = True
 
-            # TODO grab active scene if non-null & call update_all and draw_all on scene
+            #Here all we should have is a call to the scenes three functions
+            #scene.input
+            #scene.update
+            #scene.draw
 
-            # TODO move to draw_all function of a custom scene object
-            # draws the lines that make the grids
-            [pygame.draw.line(self._screen, pygame.Color('gray'), (x, 0), (x, self._screen_height))
-             for x in range(0, self._screen_width, self._tile_size)]
-            [pygame.draw.line(self._screen, pygame.Color('gray'), (0, y), (self._screen_width, y))
-             for y in range(0, self._screen_height, self._tile_size)]
+            #DISPLAY
+            #Logan Reneau, made a display loop that loops through drawn rectangles
+            self._screen.fill(pygame.Color('grey'))
+            init_scene.draw()
 
             pygame.display.flip()
             self.delta_time = self.clock.tick(self._fps)

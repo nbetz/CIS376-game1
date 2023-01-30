@@ -1,55 +1,19 @@
-import abc
+import pygame
 
-import pygame.sprite
-
-
-class GameObject:
+class Rectangle():
     x: int
     y: int
-    tags: list
-    tag_information: dict
-
-    # TODO
-    def __init__(self):
+    color: tuple
+    isAlive: bool
+    def __init__(self, isAlive, x, y):
+        self.x = x
+        self.y = y
+        self.isAlive = isAlive
+        if self.isAlive:
+            self.color = (255, 0, 0)
+        else:
+            self.color = (0, 0, 0)
         pass
 
 
-class Updatable(abc.ABC):
 
-    @abc.abstractmethod
-    def update(self):
-        pass
-
-
-class Drawable(abc.ABC):
-    sprite: pygame.sprite.Sprite
-
-    @abc.abstractmethod
-    def draw(self):
-        pass
-
-
-class DGameObject(GameObject, Drawable):
-    # TODO add override constructor to create Sprite for object
-
-    # TODO
-    def draw(self):
-        pass
-
-
-class DUGameObject(GameObject, Drawable, Updatable):
-    # TODO add override constructor to create Sprite for object
-
-    # TODO
-    def update(self):
-        pass
-
-    # TODO
-    def draw(self):
-        pass
-
-
-class UGameObject(GameObject, Updatable):
-    # TODO
-    def update(self):
-        pass

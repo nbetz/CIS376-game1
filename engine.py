@@ -12,12 +12,11 @@ class Engine:
     _screen_width: int
     _screen_height: int
     _screen: pygame.Surface
-    _scene_list: list
     _active_scene: scene
     clock: pygame.time.Clock
     delta_time: int
     event_queue: list
-    rectList: list
+
 
     def __init__(self, game_fps, tile_size, screen_width, screen_height):
         pygame.init()
@@ -30,15 +29,12 @@ class Engine:
         self.clock = pygame.time.Clock()
         self.delta_time = 0
         self.event_queue = pygame.event.get()
-        self._scene_list = []
 
-        #self.rectList = []  #this will eventually be moved to scene as the game object list
     #Noah created game loop
     def loop(self):
         self._running = True
         scene1 = scene.Scene(self)
         scene1.initial_grid()
-        self._scene_list.append(scene1)
 
         while self._running:
             # TODO move event actions to dictionary & probably move to either custom scene or gameobjects
@@ -50,15 +46,14 @@ class Engine:
                     exit()
                 #Logan Reneau click recognition
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    for currentRect in scene1.game_objects:
-                            rect = pygame.Rect(currentRect.x, currentRect.y, self._tile_size-1, self._tile_size-1)
-                            if rect.collidepoint(event.pos):
-                                if currentRect.isAlive:
-                                    currentRect.color = (0, 0, 0)
-                                    currentRect.isAlive = False
+                    for gameObject in scene1.game_objects:
+                            if gameObject.collidepoint(event.pos):
+                                if gameObject.isAlive:
+                                    gameObject.color = (0, 0, 0)
+                                    gameObject.isAlive = False
                                 else:
-                                    currentRect.color = (255, 0, 0)
-                                    currentRect.isAlive = True
+                                    gameObject.color = (255, 0, 0)
+                                    gameObject.isAlive = True
 
             scene1.input()
             scene1.update()
@@ -68,12 +63,3 @@ class Engine:
             scene1.draw()
             pygame.display.flip()
             self.delta_time = self.clock.tick(self._fps)
-
-    # TODO
-    def add_scene(self):
-        pass
-
-    # TODO
-    def set_active_scene(self):
-        pass
-

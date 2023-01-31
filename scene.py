@@ -1,5 +1,6 @@
 import game_object
 import pygame
+import random
 
 
 class Scene:
@@ -12,12 +13,18 @@ class Scene:
         self.width = engine._screen_width
         self.game_objects = []
         self.previous_game_objects = []
+        self.rand = random.Random
 
 
     def initial_grid(self):
         for y in range(0, self.height, self.tile_size):
             for x in range(0, self.width, self.tile_size):
-                rectangle = game_object.Rectangle(False, x, y)
+                temp = random.randint(0, 1)
+                if temp == 1:
+                    life = True
+                else:
+                    life = False
+                rectangle = game_object.Rectangle(life, x, y)
                 self.game_objects.append(rectangle)
                 self.draw()
         pass
@@ -26,8 +33,8 @@ class Scene:
         pass
 
     def update(self):
-        #for cell in self.game_objects:
-            #self.check_cell(cell)
+        for cell in self.game_objects:
+            self.check_cell(cell)
         pass
 
     def valid_input(self, x, y):
@@ -78,9 +85,11 @@ class Scene:
         if cell.isAlive == True:
             if count < 1 or count > 4:
                 cell.isAlive = False
+                cell.color = (0, 0, 0)
         else:
             if count == 3:
                 cell.isAlive = True
+                cell.color = (255, 0, 0)
         pass
 
 

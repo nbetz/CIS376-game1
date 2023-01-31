@@ -1,5 +1,6 @@
 import pygame
 
+#Logan Reneau
 class Rectangle(pygame.Rect):
     def __init__(self, isAlive, x, y):
         super().__init__(x, y, 29, 29)

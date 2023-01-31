@@ -15,7 +15,7 @@ class Scene:
         self.previous_game_objects = []
         self.rand = random.Random
 
-
+    #Logan Reneau
     def initial_grid(self):
         for y in range(0, self.height, self.tile_size):
             for x in range(0, self.width, self.tile_size):
@@ -37,6 +37,7 @@ class Scene:
             self.check_cell(cell)
         pass
 
+    #Logan Reneau
     def valid_input(self, x, y):
         if x >= 0 and x < self.width:
             if y>=0 and y < self.height:
@@ -45,7 +46,7 @@ class Scene:
         return 0
         pass
 
-
+    #Logan Reneau
     def check_cell(self, cell):
         currentIndex = self.game_objects.index(cell)
         count = 0
@@ -93,7 +94,7 @@ class Scene:
         pass
 
 
-
+    #Logan Reneau
     def draw(self):
         for item in self.game_objects:
             color = item.color

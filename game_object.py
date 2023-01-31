@@ -1,10 +1,6 @@
 import pygame
 
 class Rectangle():
-    x: int
-    y: int
-    color: tuple
-    isAlive: bool
     def __init__(self, isAlive, x, y):
         self.x = x
         self.y = y

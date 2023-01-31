@@ -36,9 +36,10 @@ class Engine:
     #Noah created game loop
     def loop(self):
         self._running = True
-        init_scene = scene.Scene(self)
-        init_scene.initial_grid()
-        self._scene_list.append(init_scene)
+        scene1 = scene.Scene(self)
+        scene1.initial_grid()
+        self._scene_list.append(scene1)
+
         while self._running:
             # TODO move event actions to dictionary & probably move to either custom scene or gameobjects
             #INPUT
@@ -49,7 +50,7 @@ class Engine:
                     exit()
                 #Logan Reneau click recognition
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    for currentRect in init_scene.game_objects:
+                    for currentRect in scene1.game_objects:
                             rect = pygame.Rect(currentRect.x, currentRect.y, self._tile_size-1, self._tile_size-1)
                             if rect.collidepoint(event.pos):
                                 if currentRect.isAlive:
@@ -59,16 +60,12 @@ class Engine:
                                     currentRect.color = (255, 0, 0)
                                     currentRect.isAlive = True
 
-            #Here all we should have is a call to the scenes three functions
-            #scene.input
-            #scene.update
-            #scene.draw
-
+            scene1.input()
+            scene1.update()
             #DISPLAY
             #Logan Reneau, made a display loop that loops through drawn rectangles
             self._screen.fill(pygame.Color('grey'))
-            init_scene.draw()
-
+            scene1.draw()
             pygame.display.flip()
             self.delta_time = self.clock.tick(self._fps)
 

@@ -5,19 +5,6 @@ import scene
 # Logan Reneau, initial gameloop and display
 # Noah converted Engine to a class
 class Engine:
-    # technically the private vars don't need to be static, but makes it more readable
-    _running: bool
-    _fps: int
-    _tile_size: int
-    _screen_width: int
-    _screen_height: int
-    _screen: pygame.Surface
-    _active_scene: scene
-    clock: pygame.time.Clock
-    delta_time: int
-    event_queue: list
-
-
     def __init__(self, game_fps, tile_size, screen_width, screen_height):
         pygame.init()
         self._running = False
@@ -52,14 +39,14 @@ class Engine:
                                     gameObject.color = (0, 0, 0)
                                     gameObject.isAlive = False
                                 else:
-                                    gameObject.color = (255, 0, 0)
+                                    gameObject.color = (21, 71, 52)
                                     gameObject.isAlive = True
 
             scene1.input()
             scene1.update()
             #DISPLAY
             #Logan Reneau, made a display loop that loops through drawn rectangles
-            self._screen.fill(pygame.Color('grey'))
+            self._screen.fill(pygame.Color('dimgrey'))
             scene1.draw()
             pygame.display.flip()
             self.delta_time = self.clock.tick(self._fps)

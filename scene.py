@@ -4,7 +4,6 @@ import random
 
 
 class Scene:
-
     def __init__(self, engine):
         self.engine = engine
         self.screen = engine._screen
@@ -14,6 +13,7 @@ class Scene:
         self.game_objects = []
         self.previous_game_objects = []
         self.rand = random.Random
+        self.user_object = game_object.userCircle(self)
 
     #Logan Reneau
     def initial_grid(self):
@@ -24,9 +24,12 @@ class Scene:
                     life = True
                 else:
                     life = False
-                rectangle = game_object.Rectangle(life, x, y)
+                rectangle = game_object.Rectangle(self, life, x, y)
                 self.game_objects.append(rectangle)
                 self.draw()
+        #make sure that the player object is able to spawn in
+        self.game_objects[0].isAlive = False
+        self.game_objects[0].color = (0, 0, 0)
         pass
 
     def input(self):
@@ -90,7 +93,7 @@ class Scene:
         else:
             if count == 3:
                 cell.isAlive = True
-                cell.color = (255, 0, 0)
+                cell.color = (21, 71, 52)
         pass
 
 

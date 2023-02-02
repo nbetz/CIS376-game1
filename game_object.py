@@ -3,8 +3,6 @@ import random
 
 from pygame.sprite import AbstractGroup
 
-import scene
-
 
 class GameObject(pygame.sprite.DirtySprite):
     def __init__(self, x, y, in_scene, *groups: AbstractGroup):
@@ -52,7 +50,7 @@ class PlayerCircle(GameObject):
         self.color = (255, 0, 0)
 
         # https://www.reddit.com/r/pygame/comments/6v9os5/how_to_draw_a_sprite_with_a_circular_shape/
-        self.image = pygame.Surface([scene.MazeScene, scene.MazeScene], pygame.SRCALPHA)
+        self.image = pygame.Surface([self.scene.tile_size, self.scene.tile_size], pygame.SRCALPHA)
         pygame.draw.circle(self.image, self.color, (self.centerX, self.centerY), self.radius)
         self.rect = self.image.get_rect(center=(self.centerX, self.centerY))
 
@@ -60,13 +58,13 @@ class PlayerCircle(GameObject):
     #  also don't move entire tiles at a time
     def move(self, direction):
         if direction == 'r':
-            self.x = self.x + scene.MazeScene
+            self.x = self.x + self.scene.tile_size
         if direction == 'l':
-            self.x = self.x - scene.MazeScene
+            self.x = self.x - self.scene.tile_size
         if direction == 'u':
-            self.y = self.y + scene.MazeScene
+            self.y = self.y + self.scene.tile_size
         if direction == 'd':
-            self.y = self.y - scene.MazeScene
+            self.y = self.y - self.scene.tile_size
 
     def check_bound(self, coordinate_plane, cp_coordinate):
         if coordinate_plane == 'x':

@@ -1,115 +1,124 @@
 import game_object
 import pygame
 import random
+import engine
 
 
 class Scene:
-    def __init__(self, engine):
-        self.engine = engine
-        self.screen = engine._screen
-        self.tile_size = engine._tile_size
-        self.height = engine._screen_height
-        self.width = engine._screen_width
+
+    def __init__(self, tile_size):
+        updatable = pygame.sprite.Group()
         self.game_objects = []
+        self.groups = {"updatable": updatable}
         self.previous_game_objects = []
         self.rand = random.Random
-        self.user_object = game_object.userCircle(self)
+        self.user_object: game_object.GameObject
+        self.tile_size = tile_size
 
-    #Logan Reneau
+    def update_all_objects(self):
+        # calls update() method for all updatable game objects in scene
+        [game_obj.update() for game_obj in self.game_objects if isinstance(game_obj, game_object.GameObject)]
+
+
+# Logan Reneau
+def valid_input(x, y):
+    if 0 <= x < engine.Engine.screen_width:
+        if 0 <= y < engine.Engine.screen_height:
+            return 1
+    return 0
+
+
+class MazeScene(Scene):
+    def __init__(self, tile_size):
+        Scene.__init__(self, tile_size)
+        walls = pygame.sprite.Group()
+        paths = pygame.sprite.Group()
+        player = pygame.sprite.Group()
+        rectangles = pygame.sprite.Group()
+        all_sprites = pygame.sprite.Group()
+        self.groups.update({"walls": walls, "paths": paths, "player": player, "rectangles": rectangles,
+                            "all_sprites": all_sprites})
+
+    # TODO temporary until checkcell code is moved to Rectangle game object
+    def update_all_objects(self):
+        # calls update() method for all updatable game objects in scene
+        [self.check_cell(game_obj) for game_obj in self.game_objects if isinstance(game_obj, game_object.Rectangle)]
+
+    # Logan Reneau
     def initial_grid(self):
-        for y in range(0, self.height, self.tile_size):
-            for x in range(0, self.width, self.tile_size):
+
+        for y in range(0, engine.Engine.screen_height, self.tile_size):
+            for x in range(0, engine.Engine.screen_width, self.tile_size):
                 temp = random.randint(0, 1)
                 if temp == 1:
                     life = True
                 else:
                     life = False
-                rectangle = game_object.Rectangle(self, life, x, y)
+                rectangle = game_object.Rectangle(life, x, y, self)
+                rectangle.add(self.groups.get("rectangles"))
+                rectangle.add(self.groups.get("all_sprites"))
+                if life:
+                    rectangle.add(self.groups.get("walls"))
+                else:
+                    rectangle.add(self.groups.get("paths"))
                 self.game_objects.append(rectangle)
+
                 self.draw()
-        #make sure that the player object is able to spawn in
-        self.game_objects[0].isAlive = False
+
+        # make sure that the player object is able to spawn in
+        self.game_objects[0].is_wall = False
         self.game_objects[0].color = (0, 0, 0)
-        pass
 
-    def input(self):
-        pass
-
-    def update(self):
-        for cell in self.game_objects:
-            self.check_cell(cell)
-        pass
-
-    #Logan Reneau
-    def valid_input(self, x, y):
-        if x >= 0 and x < self.width:
-            if y>=0 and y < self.height:
-                return 1
-
-        return 0
-        pass
-
-    #Logan Reneau
+    # Logan Reneau
     def check_cell(self, cell):
-        currentIndex = self.game_objects.index(cell)
+        current_index = self.game_objects.index(cell)
         count = 0
-        #top left
-        if self.valid_input(cell.x-self.tile_size, cell.y-self.tile_size) == 1:
-            if self.game_objects[int(currentIndex-(self.width/self.tile_size)+1)].isAlive == True:
-                count = count+1
-        #top
-        if self.valid_input(cell.x, cell.y-self.tile_size) == 1:
-            if self.game_objects[int(currentIndex-(self.width/self.tile_size))].isAlive == True:
-                count = count+1
-        #top right
-        if self.valid_input(cell.x+self.tile_size, cell.y-self.tile_size) == 1:
-            if self.game_objects[int(currentIndex-(self.width/self.tile_size)-1)].isAlive == True:
-                count = count+1
-        #left
-        if self.valid_input(cell.x-self.tile_size, cell.y) == 1:
-            if self.game_objects[currentIndex-1].isAlive == True:
-                count = count+1
-        #right
-        if self.valid_input(cell.x+self.tile_size, cell.y) == 1:
-            if self.game_objects[currentIndex-1].isAlive == True:
-                count = count+1
-        #bottom left
-        if self.valid_input(cell.x-self.tile_size, cell.y+self.tile_size) == 1:
-            if self.game_objects[int(currentIndex+(self.width/self.tile_size)-1)].isAlive == True:
-                count = count+1
-        #bottom
-        if self.valid_input(cell.x, cell.y+self.tile_size) == 1:
-            if self.game_objects[int(currentIndex+(self.width/self.tile_size))].isAlive == True:
-                count = count+1
-        #bottom right
-        if self.valid_input(cell.x+self.tile_size, cell.y+self.tile_size) == 1:
-            if self.game_objects[int(currentIndex+(self.width/self.tile_size)+1)].isAlive == True:
-                count = count+1
+        # top left
+        if valid_input(cell.x - self.tile_size, cell.y - self.tile_size) == 1:
+            if self.game_objects[int(current_index - (engine.Engine.screen_width / self.tile_size) + 1)].is_wall:
+                count = count + 1
+        # top
+        if valid_input(cell.x, cell.y - self.tile_size) == 1:
+            if self.game_objects[int(current_index - (engine.Engine.screen_width / self.tile_size))].is_wall:
+                count = count + 1
+        # top right
+        if valid_input(cell.x + self.tile_size, cell.y - self.tile_size) == 1:
+            if self.game_objects[int(current_index - (engine.Engine.screen_width / self.tile_size) - 1)].is_wall:
+                count = count + 1
+        # left
+        if valid_input(cell.x - self.tile_size, cell.y) == 1:
+            if self.game_objects[current_index - 1].is_wall:
+                count = count + 1
+        # right
+        if valid_input(cell.x + self.tile_size, cell.y) == 1:
+            if self.game_objects[current_index - 1].is_wall:
+                count = count + 1
+        # bottom left
+        if valid_input(cell.x - self.tile_size, cell.y + self.tile_size) == 1:
+            if self.game_objects[int(current_index + (engine.Engine.screen_width / self.tile_size) - 1)].is_wall:
+                count = count + 1
+        # bottom
+        if valid_input(cell.x, cell.y + self.tile_size) == 1:
+            if self.game_objects[int(current_index + (engine.Engine.screen_width / self.tile_size))].is_wall:
+                count = count + 1
+        # bottom right
+        if valid_input(cell.x + self.tile_size, cell.y + self.tile_size) == 1:
+            if self.game_objects[int(current_index + (engine.Engine.screen_width / self.tile_size) + 1)].is_wall:
+                count = count + 1
 
-        if cell.isAlive == True:
+        if cell.is_wall:
             if count < 1 or count > 4:
-                cell.isAlive = False
-                cell.color = (0, 0, 0)
+                cell.update()
+                cell.remove(self.groups.get("walls"))
+                cell.add(self.groups.get("paths"))
+
         else:
             if count == 3:
-                cell.isAlive = True
-                cell.color = (21, 71, 52)
-        pass
+                cell.update()
+                cell.remove(self.groups.get("paths"))
+                cell.add(self.groups.get("walls"))
 
-
-    #Logan Reneau
+    # Noah Betz
     def draw(self):
-        for item in self.game_objects:
-            color = item.color
-            rect = pygame.Rect(item.x, item.y, self.tile_size-1, self.tile_size-1)
-            pygame.draw.rect(self.screen, color, rect)
-        pass
-
-    #def update_all_objects(self):
-        # calls update() method for all updatable game objects in scene
-        #[game_obj.update() for game_obj in self.game_objects if isinstance(game_obj, game_object.Updatable)]
-
-    #def draw_all_objects(self):
-        # calls draw() method for all drawable game objects in scene
-        #[game_obj.draw() for game_obj in self.game_objects if isinstance(game_obj, game_object.Drawable)]
-
+        sprite_group = self.groups.get("all_sprites")
+        sprite_group.draw(engine.Engine.screen)

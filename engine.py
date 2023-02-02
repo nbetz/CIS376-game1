@@ -5,48 +5,62 @@ import scene
 # Logan Reneau, initial gameloop and display
 # Noah converted Engine to a class
 class Engine:
-    def __init__(self, game_fps, tile_size, screen_width, screen_height):
-        pygame.init()
-        self._running = False
-        self._fps = game_fps
-        self._tile_size = tile_size
-        self._screen_width = screen_width
-        self._screen_height = screen_height
-        self._screen = pygame.display.set_mode((screen_width, screen_height))
-        self.clock = pygame.time.Clock()
-        self.delta_time = 0
-        self.event_queue = pygame.event.get()
+    _running: bool
+    _fps: int
+    _active_scene: scene
+    screen_width: int
+    screen_height: int
+    clock: pygame.time.Clock
+    delta_time: int
+    event_queue: list
+    scene_list: list = []
+    screen: pygame.Surface
 
-    #Noah created game loop
+    def __init__(self, game_fps, screen_width, screen_height):
+        pygame.init()
+        Engine._running = False
+        Engine._fps = game_fps
+        Engine.screen_width = screen_width
+        Engine.screen_height = screen_height
+        Engine.screen = pygame.display.set_mode((screen_width, screen_height))
+        Engine.clock = pygame.time.Clock()
+        Engine.delta_time = 0
+        Engine.event_queue = pygame.event.get()
+
+    # Noah created game loop
     def loop(self):
         self._running = True
-        scene1 = scene.Scene(self)
-        scene1.initial_grid()
 
         while self._running:
-            # TODO move event actions to dictionary & probably move to either custom scene or gameobjects
-            #INPUT
+            # INPUT
 
-            #UPDATE
+            # UPDATE
+            # TODO move event actions to dictionary & probably move to either custom scene or gameobjects
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     exit()
-                #Logan Reneau click recognition
+                # Logan Reneau click recognition
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    for gameObject in scene1.game_objects:
-                            if gameObject.collidepoint(event.pos):
-                                if gameObject.isAlive:
-                                    gameObject.color = (0, 0, 0)
-                                    gameObject.isAlive = False
-                                else:
-                                    gameObject.color = (21, 71, 52)
-                                    gameObject.isAlive = True
+                    for gameObject in self._active_scene.game_objects:
+                        if gameObject.rect.collidepoint(event.pos):
+                            gameObject.update()
+                            # TODO eventually make sure that we update the group (not important rn)
 
-            scene1.input()
-            scene1.update()
-            #DISPLAY
-            #Logan Reneau, made a display loop that loops through drawn rectangles
-            self._screen.fill(pygame.Color('dimgrey'))
-            scene1.draw()
+            # scene1.input()
+            self._active_scene.update_all_objects()
+            # DISPLAY
+            # Logan Reneau, made a display loop that loops through drawn rectangles
+            self.screen.fill(pygame.Color('dimgrey'))
+            self._active_scene.draw()
             pygame.display.flip()
             self.delta_time = self.clock.tick(self._fps)
+
+    def add_scene(self, game_scene):
+        self.scene_list.append(game_scene)
+
+    def set_active_scene(self, game_scene):
+        self._active_scene = game_scene
+        self.screen.fill(pygame.Color('dimgrey'))
+        game_scene.initial_grid()
+        game_scene.draw()
+        pygame.display.flip()

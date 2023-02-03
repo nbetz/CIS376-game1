@@ -43,7 +43,7 @@ class Engine:
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     for gameObject in self._active_scene.game_objects:
                         if gameObject.rect.collidepoint(event.pos):
-                            gameObject.update()
+                            gameObject.update(type="click")
                             # TODO eventually make sure that we update the group (not important rn)
 
             # scene1.input()

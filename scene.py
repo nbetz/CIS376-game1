@@ -22,6 +22,9 @@ class Scene:
     def draw(self):
         pass
 
+    def check_win(self):
+        pass
+
 # Logan Reneau
 def valid_input(x, y):
     if 0 <= x < engine.Engine.screen_width:
@@ -41,10 +44,12 @@ class MazeScene(Scene):
         self.groups.update({"walls": walls, "paths": paths, "player": player, "rectangles": rectangles,
                             "all_sprites": all_sprites})
 
+
     # TODO temporary until checkcell code is moved to Rectangle game object
     def update_all_objects(self):
         # calls update() method for all updatable game objects in scene
         [self.check_cell(game_obj) for game_obj in self.game_objects if isinstance(game_obj, game_object.Rectangle)]
+
 
     # Logan Reneau
     def initial_grid(self):
@@ -121,6 +126,18 @@ class MazeScene(Scene):
                 cell.update()
                 cell.remove(self.groups.get("paths"))
                 cell.add(self.groups.get("walls"))
+
+    #Logan Reneau
+    def check_win(self):
+        #odd way to get it but the only way
+        for players in self.groups.get("player"):
+            player = players
+
+        if player.x + player.centerX == engine.Engine.screen_width - player.centerX \
+                and player.y + player.centerY == engine.Engine.screen_height - player.centerY:
+            print("Congrats! You have won!")
+            return 1
+        return 0
 
     # Noah Betz
     def draw(self):

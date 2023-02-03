@@ -38,7 +38,7 @@ class Rectangle(GameObject):
             self.dirty = 1
         elif not self.is_wall:
             self.is_wall = True
-            self.color = (21, 71, 52)
+            self.color = (random.randint(0, 255), random.randint(0, 255), random.randint(0, 255))
             self.image.fill(self.color)
             self.dirty = 1
 
@@ -86,10 +86,8 @@ class PlayerCircle(GameObject):
                 return 0
             return 1
 
-    # def check_collision(self, direction):
-    #     self.move_player(direction)
-    #     if(pygame.sprite.spritecollide(self, self.scene.groups.get("walls"), False, None):
-    #         self.move_player()
+    def check_collision(self, direction):
+        pass
 
     def update(self, direction):
         if direction == "right" or direction == "left":

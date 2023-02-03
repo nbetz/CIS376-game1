@@ -33,7 +33,8 @@ class Engine:
         pygame.key.set_repeat(500)
         while self._running:
             # INPUT
-
+            if self._active_scene.check_win():
+                exit()
             # UPDATE
             # TODO move event actions to dictionary & probably move to either custom scene or gameobjects
             for event in pygame.event.get():

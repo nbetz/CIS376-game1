@@ -19,6 +19,8 @@ class Scene:
         # calls update() method for all updatable game objects in scene
         [game_obj.update() for game_obj in self.game_objects if isinstance(game_obj, game_object.GameObject)]
 
+    def draw(self):
+        pass
 
 # Logan Reneau
 def valid_input(x, y):
@@ -46,7 +48,6 @@ class MazeScene(Scene):
 
     # Logan Reneau
     def initial_grid(self):
-
         for y in range(0, engine.Engine.screen_height, self.tile_size):
             for x in range(0, engine.Engine.screen_width, self.tile_size):
                 temp = random.randint(0, 1)
@@ -68,6 +69,9 @@ class MazeScene(Scene):
         # make sure that the player object is able to spawn in
         self.game_objects[0].is_wall = False
         self.game_objects[0].color = (0, 0, 0)
+        player_obj = game_object.PlayerCircle(self)
+        player_obj.add(self.groups.get("all_sprites"))
+        player_obj.add(self.groups.get("player"))
 
     # Logan Reneau
     def check_cell(self, cell):
@@ -91,7 +95,7 @@ class MazeScene(Scene):
                 count = count + 1
         # right
         if valid_input(cell.x + self.tile_size, cell.y) == 1:
-            if self.game_objects[current_index - 1].is_wall:
+            if self.game_objects[current_index + 1].is_wall:
                 count = count + 1
         # bottom left
         if valid_input(cell.x - self.tile_size, cell.y + self.tile_size) == 1:

@@ -3,6 +3,8 @@ import random
 
 from pygame.sprite import AbstractGroup
 
+import engine
+
 
 class GameObject(pygame.sprite.DirtySprite):
     def __init__(self, x, y, in_scene, *groups: AbstractGroup):
@@ -56,24 +58,47 @@ class PlayerCircle(GameObject):
 
     # TODO need to use engine delta time,
     #  also don't move entire tiles at a time
-    def move(self, direction):
-        if direction == 'r':
+    def move_player(self, direction):
+        if direction == "right":
             self.x = self.x + self.scene.tile_size
-        if direction == 'l':
+            self.rect.x = self.x
+        if direction == "left":
             self.x = self.x - self.scene.tile_size
-        if direction == 'u':
-            self.y = self.y + self.scene.tile_size
-        if direction == 'd':
+            self.rect.x = self.x
+        if direction == "up":
             self.y = self.y - self.scene.tile_size
+            self.rect.y = self.y
+        if direction == "down":
+            self.y = self.y + self.scene.tile_size
+            self.rect.y = self.y
 
-    def check_bound(self, coordinate_plane, cp_coordinate):
+    def check_bound(self, coordinate_plane, cp_coordinate, direction):
         if coordinate_plane == 'x':
-            if cp_coordinate - self.scene.tile_size > 0:
-                if cp_coordinate + self.scene.tile_size < self.scene.width:
-                    return 1
-            return 0
-        elif cp_coordinate == 'y':
-            if cp_coordinate - self.scene.tile_size > 0:
-                if cp_coordinate + self.scene.tile_size < self.scene.height:
-                    return 1
-            return 0
+            if cp_coordinate - self.scene.tile_size < 0 and direction == "left":
+                return 0
+            if cp_coordinate + self.scene.tile_size >= engine.Engine.screen_width and direction == "right":
+                return 0
+            return 1
+        elif coordinate_plane == 'y':
+            if cp_coordinate - self.scene.tile_size < 0 and direction == "up":
+                return 0
+            if cp_coordinate + self.scene.tile_size >= engine.Engine.screen_height and direction == "down":
+                return 0
+            return 1
+
+    # def check_collision(self, direction):
+    #     self.move_player(direction)
+    #     if(pygame.sprite.spritecollide(self, self.scene.groups.get("walls"), False, None):
+    #         self.move_player()
+
+    def update(self, direction):
+        if direction == "right" or direction == "left":
+            if self.check_bound('x', self.x, direction):
+                #if not self.check_collision():
+                    self.move_player(direction)
+
+        elif direction == "up" or direction == "down":
+            if self.check_bound('y', self.y, direction):
+                #if self.check_collision():
+                    self.move_player(direction)
+        self.dirty = 1

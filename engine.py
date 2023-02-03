@@ -7,7 +7,7 @@ import scene
 class Engine:
     _running: bool
     _fps: int
-    _active_scene: scene
+    _active_scene: scene.Scene
     screen_width: int
     screen_height: int
     clock: pygame.time.Clock
@@ -30,7 +30,7 @@ class Engine:
     # Noah created game loop
     def loop(self):
         self._running = True
-
+        pygame.key.set_repeat(500)
         while self._running:
             # INPUT
 
@@ -44,6 +44,15 @@ class Engine:
                     for gameObject in self._active_scene.game_objects:
                         if gameObject.rect.collidepoint(event.pos):
                             gameObject.update()
+                elif event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_w:
+                        self._active_scene.groups.get("player").update("up")
+                    elif event.key == pygame.K_a:
+                        self._active_scene.groups.get("player").update("left")
+                    elif event.key == pygame.K_s:
+                        self._active_scene.groups.get("player").update("down")
+                    elif event.key == pygame.K_d:
+                        self._active_scene.groups.get("player").update("right")
                             # TODO eventually make sure that we update the group (not important rn)
 
             # scene1.input()

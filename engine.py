@@ -62,6 +62,6 @@ class Engine:
     def set_active_scene(self, game_scene):
         self._active_scene = game_scene
         self.screen.fill(pygame.Color('dimgrey'))
-        game_scene.initial_grid()
+        game_scene.initial_grid(True)
         game_scene.draw()
         pygame.display.flip()

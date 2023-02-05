@@ -21,8 +21,8 @@ class GameObject(pygame.sprite.DirtySprite):
 def valid_input(x, y):
     if 0 <= x < engine.Engine.screen_width:
         if 0 <= y < engine.Engine.screen_height:
-            return 1
-    return 0
+            return True
+    return False
 
 
 def generate_random_color():
@@ -36,7 +36,7 @@ class Rectangle(GameObject):
         self.last_is_wall = is_wall
         self.skip_update = False
         self.add(self.scene.groups.get("rectangles"))
-        self.scene.groups.get("all_sprites")
+        self.add(self.scene.groups.get("all_sprites"))
         if self.is_wall:
             self.color = generate_random_color()
             self.add(self.scene.groups.get("walls"))
@@ -73,15 +73,15 @@ class Rectangle(GameObject):
         # set new_index to be same x position in row above
         new_index = current_index - int((engine.Engine.screen_width / self.scene.tile_size))
         # top right
-        if valid_input(self.last_x + self.scene.tile_size, self.last_y - self.scene.tile_size) == 1:
+        if valid_input(self.last_x + self.scene.tile_size, self.last_y - self.scene.tile_size):
             if self.scene.game_objects[new_index + 1].last_is_wall:
                 count = count + 1
         # top
-        if valid_input(self.last_x, self.last_y - self.scene.tile_size) == 1:
+        if valid_input(self.last_x, self.last_y - self.scene.tile_size):
             if self.scene.game_objects[new_index].last_is_wall:
                 count = count + 1
         # top left
-        if valid_input(self.last_x - self.scene.tile_size, self.last_y - self.scene.tile_size) == 1:
+        if valid_input(self.last_x - self.scene.tile_size, self.last_y - self.scene.tile_size):
             if self.scene.game_objects[new_index - 1].last_is_wall:
                 count = count + 1
         return count
@@ -89,11 +89,11 @@ class Rectangle(GameObject):
     def check_current_row(self, current_index):
         count = 0
         # left
-        if valid_input(self.last_x - self.scene.tile_size, self.last_y) == 1:
+        if valid_input(self.last_x - self.scene.tile_size, self.last_y):
             if self.scene.game_objects[current_index - 1].last_is_wall:
                 count = count + 1
         # right
-        if valid_input(self.x + self.scene.tile_size, self.y) == 1:
+        if valid_input(self.x + self.scene.tile_size, self.y):
             if self.scene.game_objects[current_index + 1].is_wall:
                 count = count + 1
         return count
@@ -103,41 +103,23 @@ class Rectangle(GameObject):
         # set new_index to be same x position in row above
         new_index = current_index + int((engine.Engine.screen_width / self.scene.tile_size))
         # bottom left
-        if valid_input(self.x - self.scene.tile_size, self.y + self.scene.tile_size) == 1:
+        if valid_input(self.x - self.scene.tile_size, self.y + self.scene.tile_size):
             if self.scene.game_objects[new_index - 1].is_wall:
                 count = count + 1
         # bottom
-        if valid_input(self.x, self.y + self.scene.tile_size) == 1:
+        if valid_input(self.x, self.y + self.scene.tile_size):
             if self.scene.game_objects[new_index].is_wall:
                 count = count + 1
         # bottom right
-        if valid_input(self.x + self.scene.tile_size, self.y + self.scene.tile_size) == 1:
+        if valid_input(self.x + self.scene.tile_size, self.y + self.scene.tile_size):
             if self.scene.game_objects[new_index + 1].is_wall:
                 count = count + 1
         return count
 
     def update(self, *args, **kwargs):
         if kwargs.get("type") == "click":
-            self.skip_update = True
-            if self.last_is_wall:
-                self.add(self.scene.groups.get("paths"))
-                self.remove(self.scene.groups.get("walls"))
-                self.is_wall = False
-                self.color = (0, 0, 0)
-                self.image.fill(self.color)
-                self.dirty = 1
-            else:
-                self.add(self.scene.groups.get("walls"))
-                self.remove(self.scene.groups.get("paths"))
-                self.is_wall = True
-                self.color = generate_random_color()
-                self.image.fill(self.color)
-                self.dirty = 1
-        elif not self.skip_update:
-            self.last_x = self.x
-            self.last_y = self.y
-            self.last_is_wall = self.is_wall
-            if self.should_flip():
+            if self.rect.collidepoint(kwargs.get("position")):
+                self.skip_update = True
                 if self.last_is_wall:
                     self.add(self.scene.groups.get("paths"))
                     self.remove(self.scene.groups.get("walls"))
@@ -152,15 +134,35 @@ class Rectangle(GameObject):
                     self.color = generate_random_color()
                     self.image.fill(self.color)
                     self.dirty = 1
-        else:
-            self.skip_update = False
+        elif kwargs.get("type") == "main":
+            if not self.skip_update:
+                self.last_x = self.x
+                self.last_y = self.y
+                self.last_is_wall = self.is_wall
+                if self.should_flip():
+                    if self.last_is_wall:
+                        self.add(self.scene.groups.get("paths"))
+                        self.remove(self.scene.groups.get("walls"))
+                        self.is_wall = False
+                        self.color = (0, 0, 0)
+                        self.image.fill(self.color)
+                        self.dirty = 1
+                    else:
+                        self.add(self.scene.groups.get("walls"))
+                        self.remove(self.scene.groups.get("paths"))
+                        self.is_wall = True
+                        self.color = generate_random_color()
+                        self.image.fill(self.color)
+                        self.dirty = 1
+            else:
+                self.skip_update = False
 
 
 class PlayerCircle(GameObject):
     def __init__(self, in_scene):
         super().__init__(0, 0, in_scene)
-        self.centerX = 15
-        self.centerY = 15
+        self.centerX = int(self.scene.tile_size/2)
+        self.centerY = int(self.scene.tile_size/2)
         self.radius = 5
         self.color = (255, 0, 0)
 
@@ -213,7 +215,6 @@ class PlayerCircle(GameObject):
                 direction = "left"
             if (kwargs.get("key") == pygame.K_d or kwargs.get("key") == pygame.K_RIGHT):
                 direction = "right"
-
             if direction == "right" or direction == "left":
                 if self.check_bound('x', self.x, direction):
                     #if not self.check_collision():

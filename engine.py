@@ -33,25 +33,22 @@ class Engine:
         pygame.key.set_repeat(500)
         while self._running:
             # INPUT
-            if self._active_scene.check_win():
-                exit()
-            # UPDATE
-            # TODO move event actions to dictionary & probably move to either custom scene or gameobjects
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    exit()
+                    self._running = False
                 # Logan Reneau click recognition
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     self._active_scene.update_all_objects(type="click", position=event.pos)
-                    # for gameObject in self._active_scene.game_objects:
-                    #     if gameObject.rect.collidepoint(event.pos):
-                    #         gameObject.update(type="click")
                 elif event.type == pygame.KEYDOWN:
                     self._active_scene.update_all_objects(type="keydown", key=event.key)
-                    # TODO eventually make sure that we update the group (not important rn)
 
-            # scene1.input()
-            self._active_scene.update_all_objects()
+            # Update
+            # check win condition
+            if self._active_scene.check_win():
+                self._running = False
+            else:
+                # update objects if win condition isnt met
+                self._active_scene.update_all_objects(type="main")
             # DISPLAY
             # Logan Reneau, made a display loop that loops through drawn rectangles
             self.screen.fill(pygame.Color('dimgrey'))

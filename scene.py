@@ -15,15 +15,17 @@ class Scene:
         self.user_object: game_object.GameObject
         self.tile_size = tile_size
 
-    def update_all_objects(self):
+    def update_all_objects(self, *args, **kwargs):
         # calls update() method for all updatable game objects in scene
-        [game_obj.update() for game_obj in self.game_objects if isinstance(game_obj, game_object.GameObject)]
+        all_sprites = self.groups.get("all_sprites")
+        all_sprites.update(*args, **kwargs)
 
     def draw(self):
         pass
 
     def check_win(self):
-        pass
+        return False
+
 
 class MazeScene(Scene):
     def __init__(self, tile_size):
@@ -50,22 +52,22 @@ class MazeScene(Scene):
                 rectangle = game_object.Rectangle(wall, x, y, self)
                 self.game_objects.append(rectangle)
 
-                # Create player object
-                player_obj = game_object.PlayerCircle(self)
-                player_obj.add(self.groups.get("all_sprites"))
-                player_obj.add(self.groups.get("player"))
+        # Create player object
+        player_obj = game_object.PlayerCircle(self)
+        player_obj.add(self.groups.get("all_sprites"))
+        player_obj.add(self.groups.get("player"))
 
-    #Logan Reneau
+    # Logan Reneau
     def check_win(self):
-        #odd way to get it but the only way
+        # odd way to get it but the only way
         for players in self.groups.get("player"):
             player = players
 
         if player.x + player.centerX == engine.Engine.screen_width - player.centerX \
                 and player.y + player.centerY == engine.Engine.screen_height - player.centerY:
             print("Congrats! You have won!")
-            return 1
-        return 0
+            return True
+        return False
 
     # Noah Betz
     def draw(self):

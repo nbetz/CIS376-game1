@@ -202,7 +202,34 @@ class PlayerCircle(GameObject):
             return 1
 
     def check_collision(self, direction):
-        pass
+        count = 0
+        row_count = int((engine.Engine.screen_width / self.scene.tile_size))
+
+        for item in self.scene.game_objects:
+            if item.x == self.x and item.y == self.y:
+                break
+            count = count + 1
+        current_index = count
+
+        if direction == "right":
+            if self.scene.game_objects[current_index+1].is_wall:
+                return True
+            return False
+
+        if direction == "left":
+            if self.scene.game_objects[current_index-1].is_wall:
+                return True
+            return False
+
+        if direction == "up":
+            if self.scene.game_objects[current_index-row_count].is_wall:
+                return True
+            return False
+
+        if direction == "down":
+            if self.scene.game_objects[current_index+row_count].is_wall:
+                return True
+            return False
 
     def update(self, *args, **kwargs):
         if kwargs.get("type") == "keydown":
@@ -217,11 +244,11 @@ class PlayerCircle(GameObject):
                 direction = "right"
             if direction == "right" or direction == "left":
                 if self.check_bound('x', self.x, direction):
-                    #if not self.check_collision():
+                    if not self.check_collision(direction):
                         self.move_player(direction)
 
             elif direction == "up" or direction == "down":
                 if self.check_bound('y', self.y, direction):
-                    #if self.check_collision():
+                    if not self.check_collision(direction):
                         self.move_player(direction)
             self.dirty = 1

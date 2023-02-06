@@ -17,6 +17,7 @@ if __name__ == '__main__':
     parser.add_argument('--no_walls_start', action='store_false', help='Starts the game with random walls')
     args = parser.parse_args()
 
+    # grab the arguments and store them in variables
     fps = args.fps
     tile = args.tile_size
     width = args.width
@@ -24,8 +25,11 @@ if __name__ == '__main__':
     random_walls_start = True
     randoms_walls_start = args.no_walls_start
 
+    # create the engine and scene
     e = engine.Engine(game_fps=fps, screen_width=width, screen_height=height)
     game_scene = scene.MazeScene(tile_size=tile)
+
+    # set the active scene to the game_scene we created, and start the engine loop
     e.add_scene(game_scene)
     e.set_active_scene(game_scene, has_walls=random_walls_start)
     e.loop()

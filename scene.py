@@ -7,9 +7,9 @@ import engine
 class Scene:
 
     def __init__(self, tile_size):
-        updatable = pygame.sprite.Group()
+        all_sprites = pygame.sprite.Group()
         self.game_objects = []
-        self.groups = {"updatable": updatable}
+        self.groups = {"all_sprites": all_sprites}
         self.previous_game_objects = []
         self.rand = random.Random
         self.user_object: game_object.GameObject
@@ -26,6 +26,9 @@ class Scene:
     def check_win(self):
         return False
 
+    def initial_grid(self, **kwargs):
+        pass
+
 
 class MazeScene(Scene):
     def __init__(self, tile_size):
@@ -38,8 +41,10 @@ class MazeScene(Scene):
         self.groups.update({"walls": walls, "paths": paths, "player": player, "rectangles": rectangles,
                             "all_sprites": all_sprites})
 
-    # Logan Reneau
-    def initial_grid(self, has_walls):
+    def initial_grid(self, **kwargs):
+        has_walls = True
+        if kwargs.get("has_walls") is not None:
+            has_walls = kwargs.get("has_walls")
         if has_walls:
             for y in range(0, engine.Engine.screen_height, self.tile_size):
                 for x in range(0, engine.Engine.screen_width, self.tile_size):
@@ -65,7 +70,6 @@ class MazeScene(Scene):
         player_obj.add(self.groups.get("all_sprites"))
         player_obj.add(self.groups.get("player"))
 
-    # Logan Reneau
     def check_win(self):
         # odd way to get it but the only way
         for players in self.groups.get("player"):
@@ -77,7 +81,6 @@ class MazeScene(Scene):
             return True
         return False
 
-    # Noah Betz
     def draw(self):
         self.groups.get("rectangles").draw(engine.Engine.screen)
         self.groups.get("player").draw(engine.Engine.screen)

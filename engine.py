@@ -2,8 +2,6 @@ import pygame
 import scene
 
 
-# Logan Reneau, initial gameloop and display
-# Noah converted Engine to a class
 class Engine:
     _running: bool
     _fps: int
@@ -27,7 +25,6 @@ class Engine:
         Engine.delta_time = 0
         Engine.event_queue = pygame.event.get()
 
-    # Noah created game loop
     def loop(self):
         self._running = True
         pygame.key.set_repeat(500)
@@ -36,7 +33,6 @@ class Engine:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     self._running = False
-                # Logan Reneau click recognition
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     self._active_scene.update_all_objects(type="click", position=event.pos)
                 elif event.type == pygame.KEYDOWN:
@@ -50,7 +46,6 @@ class Engine:
                 # update objects if win condition isn't met
                 self._active_scene.update_all_objects(type="main")
             # DISPLAY
-            # Logan Reneau, made a display loop that loops through drawn rectangles
             self.screen.fill(pygame.Color('dimgrey'))
             self._active_scene.draw()
             pygame.display.flip()
@@ -59,9 +54,9 @@ class Engine:
     def add_scene(self, game_scene):
         self.scene_list.append(game_scene)
 
-    def set_active_scene(self, game_scene):
+    def set_active_scene(self, game_scene, **kwargs):
         self._active_scene = game_scene
         self.screen.fill(pygame.Color('dimgrey'))
-        game_scene.initial_grid(True)
+        game_scene.initial_grid(**kwargs)
         game_scene.draw()
         pygame.display.flip()

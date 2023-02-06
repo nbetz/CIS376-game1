@@ -47,7 +47,7 @@ class Engine:
             if self._active_scene.check_win():
                 self._running = False
             else:
-                # update objects if win condition isnt met
+                # update objects if win condition isn't met
                 self._active_scene.update_all_objects(type="main")
             # DISPLAY
             # Logan Reneau, made a display loop that loops through drawn rectangles

@@ -39,18 +39,26 @@ class MazeScene(Scene):
                             "all_sprites": all_sprites})
 
     # Logan Reneau
-    def initial_grid(self):
-        for y in range(0, engine.Engine.screen_height, self.tile_size):
-            for x in range(0, engine.Engine.screen_width, self.tile_size):
-                temp = random.randint(0, 1)
-                if x == 0 and y == 0:
+    def initial_grid(self, has_walls):
+        if has_walls:
+            for y in range(0, engine.Engine.screen_height, self.tile_size):
+                for x in range(0, engine.Engine.screen_width, self.tile_size):
+                    temp = random.randint(0, 1)
+                    if x == 0 and y == 0:
+                        wall = False
+                    elif temp == 1:
+                        wall = True
+                    else:
+                        wall = False
+                    rectangle = game_object.Rectangle(wall, x, y, self)
+                    self.game_objects.append(rectangle)
+
+        else:
+            for y in range(0, engine.Engine.screen_height, self.tile_size):
+                for x in range(0, engine.Engine.screen_width, self.tile_size):
                     wall = False
-                elif temp == 1:
-                    wall = True
-                else:
-                    wall = False
-                rectangle = game_object.Rectangle(wall, x, y, self)
-                self.game_objects.append(rectangle)
+                    rectangle = game_object.Rectangle(wall, x, y, self)
+                    self.game_objects.append(rectangle)
 
         # Create player object
         player_obj = game_object.PlayerCircle(self)
